@@ -15,6 +15,6 @@ set fish_user_paths "/Applications/Postgres.app/Contents/Versions/11/bin" $fish_
 source /usr/local/share/chruby/chruby.fish
 
 # kiex
-test -s "$HOME/.kiex/scripts/kiex.fish"; and source "$HOME/.kiex/scripts/kiex.fish"
+test -s "/Users/mitchellhenke/.kiex/scripts/kiex.fish"; and source "/Users/mitchellhenke/.kiex/scripts/kiex.fish"
 set fish_user_paths "/usr/local/opt/python/libexec/bin" $fish_user_paths
 
