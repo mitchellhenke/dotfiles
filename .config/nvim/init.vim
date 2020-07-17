@@ -1,5 +1,4 @@
 call plug#begin('~/.config/nvim/plugged')
- Plug 'ElmCast/elm-vim'
  Plug 'junegunn/fzf.vim'
  Plug 'mileszs/ack.vim'
  Plug 'Raimondi/delimitMate'
@@ -7,7 +6,6 @@ call plug#begin('~/.config/nvim/plugged')
  Plug 'tpope/vim-commentary'
  Plug 'keith/swift.vim'
  Plug 'elixir-lang/vim-elixir'
- Plug 'leafgarland/typescript-vim'
  Plug 'tpope/vim-endwise'
  Plug 'tpope/vim-fugitive'
  Plug 'tpope/vim-repeat'
@@ -17,9 +15,13 @@ call plug#begin('~/.config/nvim/plugged')
  Plug 'janko-m/vim-test'
  Plug 'jgdavey/tslime.vim'
  Plug 'tpope/vim-rhubarb'
- Plug 'prabirshrestha/async.vim'
- Plug 'prabirshrestha/vim-lsp'
- Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+ " Plug 'prabirshrestha/asyncomplete.vim'
+ " Plug 'prabirshrestha/async.vim'
+ " Plug 'prabirshrestha/vim-lsp'
+ " Plug 'prabirshrestha/asyncomplete-lsp.vim'
+
+ Plug 'neovim/nvim-lsp'
  " Plug 'Shougo/echodoc.vim'
 call plug#end()
 
@@ -34,24 +36,63 @@ let g:loaded_node_provider = 1
 " set pyxversion=3
 let ruby_no_expensive = 1
 
+lua << END
+  require'nvim_lsp'.solargraph.setup{}
+
+  do
+    local method = "textDocument/publishDiagnostics"
+    local default_callback = vim.lsp.callbacks[method]
+    vim.lsp.callbacks[method] = function(err, method, result, client_id)
+      default_callback(err, method, result, client_id)
+      if result and result.diagnostics then
+        for _, v in ipairs(result.diagnostics) do
+          v.filename = result.uri
+          v.module = string.sub(result.uri, -20)
+          v.lnum = v.range.start.line + 1
+          v.col = v.range.start.character + 1
+          v.text = v.message
+        end
+        vim.lsp.util.set_qflist(result.diagnostics)
+      end
+    end
+  end
+
+  require'nvim_lsp'.elixirls.setup {
+    cmd = { "/Users/mitchellhenke/.config/elixir-ls/language_server.sh" };
+    settings = {
+    }
+  }
+
+END
+
+nnoremap <silent> gd    <cmd>lua vim.lsp.buf.declaration()<CR>
+nnoremap <silent> <c-]> <cmd>lua vim.lsp.buf.definition()<CR>
+nnoremap <silent> K     <cmd>lua vim.lsp.buf.hover()<CR>
+nnoremap <silent> gD    <cmd>lua vim.lsp.buf.implementation()<CR>
+nnoremap <silent> <c-k> <cmd>lua vim.lsp.buf.signature_help()<CR>
+nnoremap <silent> 1gD   <cmd>lua vim.lsp.buf.type_definition()<CR>
+nnoremap <silent> gr    <cmd>lua vim.lsp.buf.references()<CR>
+nnoremap <silent> g0    <cmd>lua vim.lsp.buf.document_symbol()<CR>
+nnoremap <silent> gW    <cmd>lua vim.lsp.buf.workspace_symbol()<CR>
+set omnifunc=v:lua.vim.lsp.omnifunc
+
 " WHO TF knows
 " Disable showing completion preview at the top
-set completeopt-=preview
+" set completeopt-=preview
 
-au User lsp_setup call lsp#register_server({
-      \   'name': 'elixir-ls',
-      \   'cmd': {server_info->['/Users/mitchellhenke/.config/elixir-ls/language_server.sh']},
-      \   'whitelist': ['elixir'],
-      \ })
-nnoremap gQ :LspDocumentFormat<CR>
-nnoremap <C-]> :LspDefinition<CR>
-set keywordprg=:LspHover
-set omnifunc=lsp#complete
-let g:lsp_diagnostics_enabled = 0         " disable diagnostics support
+" au User lsp_setup call lsp#register_server({
+"       \   'name': 'elixir-ls',
+"       \   'cmd': {server_info->['/Users/mitchellhenke/.config/elixir-ls/language_server.sh']},
+"       \   'whitelist': ['elixir'],
+"       \ })
+" nnoremap gQ :LspDocumentFormat<CR>
+" nnoremap <C-]> :LspDefinition<CR>
+" set keywordprg=:LspHover
+" set omnifunc=lsp#complete
+" let g:lsp_diagnostics_enabled = 0         " disable diagnostics support
 
-set termguicolors
 set background=light
-colorscheme NeoSolarized
+colorscheme solarized
 
 nmap ; :Buffers<CR>
 nmap <silent> <C-p> :Files<CR>
@@ -165,19 +206,14 @@ inoremap <expr> <C-k> ((pumvisible())?("\<C-p>"):("\<C-k>"))
 " map two tabs to autocomplete
 imap <tab><tab> <c-x><c-o>
 
-" format on save
-let g:elm_format_autosave = 1
-let g:elm_setup_keybindings = 1
-
 let $FZF_DEFAULT_COMMAND = 'ag -g ""'
 
 " fzf location
 set rtp+=/usr/local/opt/fzf
 
-if has("autocmd")
-  augroup filetype_elixir
-    au!
-    autocmd FileType elixir autocmd BufEnter * :syntax sync fromstart
-  augroup END
-endif
-
+" if has("autocmd")
+"   augroup filetype_elixir
+"     au!
+"     autocmd FileType elixir autocmd BufEnter * :syntax sync fromstart
+"   augroup END
+" endif
