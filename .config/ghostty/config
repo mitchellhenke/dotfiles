@@ -1,4 +1,5 @@
-theme = catppuccin-mocha
+theme = iTerm2 Solarized Light
 font-family = ""
 font-family = "Monaco"
 font-size = 15
+font-thicken = true
