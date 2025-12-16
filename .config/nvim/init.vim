@@ -15,6 +15,7 @@ call plug#begin('~/.config/nvim/plugged')
  Plug 'janko-m/vim-test'
  Plug 'jgdavey/tslime.vim'
  Plug 'tpope/vim-rhubarb'
+ Plug 'shaunsingh/solarized.nvim'
 
  " Plug 'prabirshrestha/asyncomplete.vim'
  " Plug 'prabirshrestha/async.vim'
