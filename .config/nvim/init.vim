@@ -197,7 +197,7 @@ set listchars=tab:>-,trail:.
 set hidden
 
 " %% to insert current file's directory path in command
-cnoremap <expr> %% getcmdtype() == ':' ? expand('%:p:h').'/' : '%%'
+cnoremap <expr> %% getcmdtype() == ':' ? fnameescape(expand('%:p:h')).'/' : '%%'
 " cnoremap <expr> %% expand("%:p:h") . "/"<CR>
 
 " Navigate autocomplete list with j and k
