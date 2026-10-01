@@ -1,38 +1,52 @@
-local Plug = vim.fn['plug#']
+-- lua vim.pack.update()
+vim.pack.add({
+  'https://github.com/junegunn/fzf.vim',
+  'https://github.com/junegunn/fzf',
+  'https://github.com/Raimondi/delimitMate',
+  'https://github.com/AndrewRadev/splitjoin.vim',
+  'https://github.com/tpope/vim-commentary',
+  'https://github.com/keith/swift.vim',
+  'https://github.com/elixir-lang/vim-elixir',
+  'https://github.com/tpope/vim-endwise',
+  'https://github.com/tpope/vim-fugitive',
+  'https://github.com/tpope/vim-repeat',
+  'https://github.com/tpope/vim-sleuth',
+  'https://github.com/tpope/vim-surround',
+  { src = 'https://github.com/christoomey/vim-tmux-navigator', version = 'c33a8a97028cac38040f1b8d9292337104026ad6' },
+  'https://github.com/janko-m/vim-test',
+  'https://github.com/jgdavey/tslime.vim',
+  'https://github.com/tpope/vim-rhubarb',
+  'https://github.com/shaunsingh/solarized.nvim',
+  'https://github.com/neovim/nvim-lsp',
+  -- https://github.com/elixir-lang/expert?tab=readme-ov-file#nightly-builds
+  'https://github.com/neovim/nvim-lspconfig',
 
-vim.call('plug#begin', '~/.config/nvim/plugged')
-Plug('junegunn/fzf.vim')
-Plug('junegunn/fzf')
-Plug('Raimondi/delimitMate')
-Plug('AndrewRadev/splitjoin.vim')
-Plug('tpope/vim-commentary')
-Plug('keith/swift.vim')
-Plug('elixir-lang/vim-elixir')
-Plug('tpope/vim-endwise')
-Plug('tpope/vim-fugitive')
-Plug('tpope/vim-repeat')
-Plug('tpope/vim-sleuth')
-Plug('tpope/vim-surround')
-Plug('christoomey/vim-tmux-navigator', { commit = 'c33a8a97028cac38040f1b8d9292337104026ad6' })
-Plug('janko-m/vim-test')
-Plug('jgdavey/tslime.vim')
-Plug('tpope/vim-rhubarb')
-Plug('shaunsingh/solarized.nvim')
-Plug('neovim/nvim-lsp')
--- https://github.com/elixir-lang/expert?tab=readme-ov-file#nightly-builds
-Plug('neovim/nvim-lspconfig')
-vim.call('plug#end')
+  -- 'https://github.com/nvim-lua/plenary.nvim',
+  -- 'https://github.com/MunifTanjim/nui.nvim',
+  -- 'https://github.com/MeanderingProgrammer/render-markdown.nvim',
+  -- 'https://github.com/yetone/avante.nvim'
+})
+
+-- require("avante").setup({
+--   providers = {
+--     claude = {
+--       auth_type = "max",
+--     }
+--   }
+-- })
 
 -- Disable unused providers
-vim.g.loaded_python_provider = 1
-vim.g.loaded_python3_provider = 1
-vim.g.loaded_ruby_provider = 1
-vim.g.loaded_node_provider = 1
-vim.g.ruby_no_expensive = 1
+vim.g.loaded_python3_provider = 0
+vim.g.loaded_ruby_provider = 0
+vim.g.loaded_node_provider = 0
+vim.g.loaded_perl_provider = 0
 
 -- Elixir LSP
+-- gh release download nightly --pattern 'expert_darwin_arm64' --repo elixir-lang/expert
+-- chmod +x expert_darwin_arm64
+-- mv expert_darwin_arm64 /Users/mitchellhenke/.config/nvim/expert_darwin_arm64
 vim.lsp.config('expert', {
-  cmd = { '/Users/mhenke/.config/nvim/expert_darwin_arm64', '--stdio' },
+  cmd = { '/Users/mitchellhenke/.config/nvim/expert_darwin_arm64', '--stdio' },
   root_markers = { 'mix.exs', '.git' },
   filetypes = { 'elixir', 'eelixir', 'heex' },
 })
@@ -161,6 +175,10 @@ end, { expr = true })
 -- Double tab to autocomplete
 vim.keymap.set('i', '<tab><tab>', '<c-x><c-o>')
 
+-- quickfix warnings
+vim.keymap.set("n", "<leader>qw", function()
+  vim.diagnostic.setqflist({ severity = { min = vim.diagnostic.severity.WARN } })
+end, { desc = "Quickfix: workspace warnings+errors" })
+
 -- FZF
 vim.env.FZF_DEFAULT_COMMAND = 'ag -g ""'
-vim.opt.rtp:append('/usr/local/opt/fzf')
